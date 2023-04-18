@@ -83,8 +83,6 @@ const createFeedback = async function (req, res) {
     let messaging = admin.messaging();
 
     let feedbackArr = [];
-    let videoIds = [];
-    let drillIds = [];
 
     for (let i = 0; i < dataArr.length; i++) {
       let {
@@ -104,31 +102,31 @@ const createFeedback = async function (req, res) {
       feedbackArr.push(feedback);
 
       if (dataArr[i].video_id) {
-        videoIds.push(dataArr[i].video_id);
+        var videoIds = dataArr[i].video_id;
       }
       if (dataArr[i].drill_id) {
-        drillIds.push(dataArr[i].drill_id);
+        var drillIds = dataArr[i].drill_id;
       }
     }
 
-    if (videoIds.length > 0) {
-      var videos = await uploadDeviceModel.find({
-        _id: { $in: videoIds },
+    if (videoIds) {
+      var videos = await uploadDeviceModel.findById({
+        _id: videoIds,
       });
 
       let message = {
         data: {
-          userId: videos[0].userId,
+          userId: videos.userId,
           topic: "Player",
           event: "FEEDBACK_CREATED",
           title: "New Feedback Created.",
-          body: videos[0].title,
+          body: videos.title,
           data: JSON.stringify({
-            userId: videos[0].userId,
+            userId: videos.userId,
             topic: "Player",
             event: "FEEDBACK_CREATED",
             title: "New Feedback Created.",
-            body: videos[0].title,
+            body: videos.title,
             Videos: JSON.stringify(videos),
           }),
         },
@@ -149,24 +147,24 @@ const createFeedback = async function (req, res) {
             .status(500)
             .send({ status: false, message: "Error sending notification." });
         });
-    } else if (drillIds.length > 0) {
-      var drills = await myDrillModel.find({
-        _id: { $in: drillIds },
+    } else if (drillIds) {
+      var drills = await myDrillModel.findById({
+        _id: drillIds,
       });
 
       let message = {
         data: {
-          userId: drills[0].userId,
+          userId: drills.userId,
           topic: "Player",
           event: "FEEDBACK_CREATED",
           title: "New Feedback Created.",
-          body: drills[0].title,
+          body: drills.title,
           data: JSON.stringify({
-            userId: drills[0].userId,
+            userId: drills.userId,
             topic: "Player",
             event: "FEEDBACK_CREATED",
             title: "New Feedback Created.",
-            body: drills[0].title,
+            body: drills.title,
             Videos: JSON.stringify(drills),
           }),
         },
